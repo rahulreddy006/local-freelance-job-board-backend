@@ -12,10 +12,24 @@ export const createGigService = async (gigData) => {
   return safeGig;
 }
 
-export const getGigsService = async() => {
-  const gigs = (await Gig.find({ status:"open"})).sort({ createdAt: -1});
+export const getGigsService = async(page,limit,filters,sortOption) => {
+  if(page < 1) page = 1;
+  if(isNaN(page)) page =1;
 
-  return gigs;
+  if(limit < 1) limit = 10;
+  if(limit > 50) limit = 50;
+  if(isNaN(limit)) limit = 10;
+
+  const skip = (page - 1) * limit;
+  const totalGigs = await Gig.countDocuments(filters);
+  const totalPages = Math.ceil(totalGigs/limit);
+
+  const gigs = await Gig.find(filters).sort(sortOption).skip(skip).limit(limit);
+  const pagination = {
+    page,limit,totalPages,totalGigs
+  }
+
+  return {gigs,pagination};
 }
 
 export const createApplicationService = async(data) =>{

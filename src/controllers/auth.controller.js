@@ -1,43 +1,58 @@
-import { createUser,loginUserService } from "../services/user.service.js";
+import { success } from "zod";
+import { createUser, loginUserService,refreshTokenService,googleCallbackService,completeProfileService } from "../services/user.service.js";
+import { asyncHandler } from "../utils/asyncHandler.util.js";
 
+export const registerUser = asyncHandler(async (req, res) => {
+  const data = await createUser(req.validatedData);
 
-export const registerUser = async(req,res)=>{
-    try {
-    const data = await createUser(req.validatedData);
-
-    res.status(201).json({
-    success :true,
-    "message":"Successfully registered",
+  res.status(201).json({
+    success: true,
+    message: "Successfully registered",
     data,
-    error:null
-    
-   })
-    } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success:false,
-            message:error.message || "Internal server error"
-        })
-        
-    }
-  
-}
+    error: null,
+  });
+});
 
-export const loginUser = async(req,res)=>{
-    try {
-        const data = await loginUserService(req.validatedData);
+export const loginUser = asyncHandler(async (req, res) => {
+  const data = await loginUserService(req.validatedData);
 
-        return res.status(200).json({
-            success:true,
-            message:"Logged in successfully",
-            data
-        })
-        
-    } catch (error) {
-        return res.status(error.statusCode || 500).json({
-            success:false,
-            message:error.message || "Internal server error"
-        })
-        
-    }
-}
+  return res.status(200).json({
+    success: true,
+    message: "Logged in successfully",
+    data,
+  });
+});
 
+export const refreshToken = asyncHandler(async (req, res) => {
+  const { refreshToken: clientRefreshToken } = req.body;
+  const result = await refreshTokenService(clientRefreshToken);
+
+  res.status(200).json({
+    message: "Token refreshed successfully",
+    accessToken: result.accessToken,
+  });
+});
+
+export const googleCallback = asyncHandler((req,res)=>{
+  const user = req.user;
+  const data = googleCallbackService(user);
+  res.status(200).json({
+    success:true,
+    message:"Logged In successfully",
+    data:data
+  });
+});
+
+export const completeProfile = asyncHandler( async(req,res)=>{
+  const {role} = req.body;
+
+  const userId = req.user.userId;
+
+  const user = await completeProfileService(role,userId);
+
+  res.status(200).json({
+    success:true,
+    message:"Onboarding complete! welcome aboard",
+    user:user
+  });
+})
