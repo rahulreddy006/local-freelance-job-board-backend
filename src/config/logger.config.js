@@ -8,11 +8,11 @@ winston.format.timestamp(),
 winston.format.simple()),
    transports:[
   new winston.transports.File({
-    filename:"src/logs/error.log",
+    filename:"logs/",
     level:"error"
   }),
   new winston.transports.File({
-    filename:"src/logs/combined.log"
+    filename:"logs/"
   }),
   new winston.transports.Console({
       format: winston.format.combine(

@@ -8,7 +8,7 @@ export const swaggerDocument = {
   },
   servers: [
     {
-      url: 'http://localhost:4000/api/v1',
+      url: process.env.API_URL || 'http://localhost:4000',
       description: 'Local Development Server',
     },
   ],
@@ -24,11 +24,7 @@ export const swaggerDocument = {
   security: [{ bearerAuth: [] }], 
 
   paths: {
-    
-    // ==========================================
-    // 1️⃣ AUTHENTICATION APIs
-    // ==========================================
-    '/register': { post: {
+    '/api/v1/register': { post: {
         summary: 'Register a new user (Local)',
         operationId: 'registerUser',
         tags: ['Authentication'],
@@ -55,7 +51,7 @@ export const swaggerDocument = {
         },
       },
      },
-    '/login': {
+    '/api/v1/login': {
       post: {
         summary: 'Log in with email and password',
         operationId: 'loginUser',
@@ -67,7 +63,7 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['email', 'password'], // ✅ Added required array
+                required: ['email', 'password'],
                 properties: {
                   email: { type: 'string', example: 'jane@example.com' },
                   password: { type: 'string', example: 'securepassword123' },
@@ -83,7 +79,7 @@ export const swaggerDocument = {
       },
     },
 
-    '/complete-profile': { patch: {
+    '/api/v1/complete-profile': { patch: {
         summary: 'Complete Google OAuth onboarding',
         operationId: 'completeProfile',
         tags: ['Authentication'],
@@ -93,7 +89,7 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['role'], // ✅ Added required array
+                required: ['role'],
                 properties: {
                   role: { type: 'string', enum: ['student', 'business'], example: 'student' },
                 },
@@ -108,13 +104,12 @@ export const swaggerDocument = {
       },
     },
 
-    // ✅ NEW: Refresh Token
-    '/refresh-token': {
+    '/api/v1/refresh-token': {
       post: {
         summary: 'Get a new access token using a refresh token',
         operationId: 'refreshToken',
         tags: ['Authentication'],
-        security: [], // Public (auth is done via the token in the body)
+        security: [], 
         requestBody: {
           required: true,
           content: {
@@ -136,22 +131,21 @@ export const swaggerDocument = {
       },
     },
 
-    // ✅ NEW: Google OAuth Routes
-    '/auth/google': {
+    '/api/v1/auth/google': {
       get: {
         summary: 'Initiate Google OAuth Login',
         tags: ['Authentication'],
-        security: [], // Public
+        security: [],
         responses: {
           302: { description: 'Redirects the user to the Google Consent Screen.' },
         },
       },
     },
-    '/auth/google/callback': {
+    '/api/v1/auth/google/callback': {
       get: {
         summary: 'Google OAuth Callback (Handled by Google)',
         tags: ['Authentication'],
-        security: [], // Public
+        security: [], 
         responses: {
           200: { description: 'Returns JWTs and onboarding status, or redirects to frontend dashboard.' },
           401: { description: 'OAuth Authentication failed.' },
@@ -159,14 +153,11 @@ export const swaggerDocument = {
       },
     },
 
-    // ==========================================
-    // 2️⃣ GIG APIs
-    // ==========================================
-    '/gigs': { get: {
+    '/api/v1/gigs': { get: {
         summary: 'Get all active gigs (with advanced querying)',
         operationId: 'getAllGigs',
         tags: ['Gigs'],
-        security: [], // Public
+        security: [], 
         parameters: [
           { 
             name: 'page', 
@@ -213,7 +204,7 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['title', 'description', 'price'], // ✅ Added required array
+                required: ['title', 'description', 'price'], 
                 properties: {
                   title: { type: 'string', example: 'Build a React website' },
                   description: { type: 'string', example: 'Need a 5-page portfolio.' },
@@ -235,13 +226,12 @@ export const swaggerDocument = {
         },
       }, },
 
-    // ✅ NEW: Get Single Gig
-    '/gigs/{gigId}': {
+    '/api/v1/gigs/{gigId}': {
       get: {
         summary: 'Get gig details by ID',
         operationId: 'getGigById',
         tags: ['Gigs'],
-        security: [], // Public
+        security: [], 
         parameters: [
           { name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'The ID of the gig' },
         ],
@@ -252,12 +242,11 @@ export const swaggerDocument = {
       },
     },
 
-    '/my-gigs': {
+    '/api/v1/my-gigs': {
       get: {
         summary: 'Get all gigs created by the current business',
         operationId: 'getMyGigs',
         tags: ['Gigs'],
-        // Uses global security (Requires Token)
         responses: {
           200: { description: 'Array of gig objects owned by the business.' },
           401: { description: 'Unauthorized.' },
@@ -266,10 +255,7 @@ export const swaggerDocument = {
       },
     },
 
-    // ==========================================
-    // 3️⃣ APPLICATION APIs
-    // ==========================================
-    '/gigs/{gigId}/apply': { post: {
+    '/api/v1/gigs/{gigId}/apply': { post: {
         summary: 'Apply to a specific gig (Student Role)',
         operationId: 'applyToGig',
         tags: ['Applications'],
@@ -288,7 +274,7 @@ export const swaggerDocument = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['proposal'], // ✅ Added required array
+                required: ['proposal'],
                 properties: {
                   proposal: { type: 'string', example: 'I can build this in 3 days using Next.js.' },
                 },
@@ -302,7 +288,7 @@ export const swaggerDocument = {
           404: { description: 'Gig not found.' },
         },
       }, },
-    '/applications/{applicationId}/status': {
+    '/api/v1/applications/{applicationId}/status': {
       patch: {
         summary: 'Update application status (Business Role)',
         operationId: 'updateApplicationStatus',
@@ -316,7 +302,6 @@ export const swaggerDocument = {
             schema: { type: 'string' },
           },
         ],
-        // 🔥 The crucial body documentation
         requestBody: {
           required: true,
           content: {
@@ -346,8 +331,7 @@ export const swaggerDocument = {
     },
 
 
-    // ✅ NEW: My Applications (Student Dashboard)
-    '/my-applications': {
+    '/api/v1/my-applications': {
       get: {
         summary: 'Get all applications submitted by the current student',
         operationId: 'getMyApplications',
@@ -361,8 +345,7 @@ export const swaggerDocument = {
       },
     },
 
-    // ✅ NEW: View Applications for a Gig (Business Action)
-    '/gigs/{gigId}/applications': {
+    '/api/v1/gigs/{gigId}/applications': {
       get: {
         summary: 'Get all applications for a specific gig (Business Role)',
         operationId: 'getGigApplications',
