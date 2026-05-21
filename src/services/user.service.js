@@ -46,15 +46,15 @@ export const loginUserService = async (data) => {
     role: user.role,
   };
 
-  const accessToken = jwt.sign(payload, process.env.JWT_SECRET,{ 
-    expiresIn: process.env.JWT_EXPIRES_IN || "15m" 
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "15m",
   });
 
-  const refreshToken = jwt.sign(payload,process.env.JWT_REFRESH_SECRET,{
-    expiresIn:process.env.JWT_REFRESH_EXPIRES_IN || "7d"
+  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
   });
 
- const safeUser = user.toObject();
+  const safeUser = user.toObject();
   delete safeUser.password;
 
   delete safeUser.__v;
@@ -62,85 +62,97 @@ export const loginUserService = async (data) => {
   safeUser.id = safeUser._id.toString();
   delete safeUser._id;
 
-  return { accessToken,refreshToken, user: safeUser };
+  return { accessToken, refreshToken, user: safeUser };
 };
 
-export const refreshTokenService = async(clientRefreshToken)=>{
+export const refreshTokenService = async (clientRefreshToken) => {
   if (!process.env.JWT_SECRET || !process.env.JWT_REFRESH_SECRET) {
-        throw new Error("Critical Server Error: JWT secrets are not defined.");
-    }
+    throw new Error("Critical Server Error: JWT secrets are not defined.");
+  }
 
-    if (!clientRefreshToken) {
-        throw new AppError("Refresh token is required!", 401);
-    }
+  if (!clientRefreshToken) {
+    throw new AppError("Refresh token is required!", 401);
+  }
 
-    const decoded = jwt.verify(clientRefreshToken, process.env.JWT_REFRESH_SECRET);
-        const payload = {
-            userId: decoded.userId,
-            role: decoded.role,
-        };
+  const decoded = jwt.verify(
+    clientRefreshToken,
+    process.env.JWT_REFRESH_SECRET,
+  );
+  const payload = {
+    userId: decoded.userId,
+    role: decoded.role,
+  };
 
-        const newAccessToken = jwt.sign(
-            payload, 
-            process.env.JWT_SECRET, 
-            { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
-        );
+  const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+  });
 
-        return { accessToken: newAccessToken };
-}
+  return { accessToken: newAccessToken };
+};
 
-export const googleCallbackService =  (user)=>{
+export const googleCallbackService = (user) => {
   const payload = {
     userId: user._id,
     role: user.role,
   };
 
-  const accessToken = jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn:process.env.JWT_EXPIRES_IN || '15m' }
-    );
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+  });
 
-    const refreshToken = jwt.sign(
-      payload,
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn:process.env.JWT_REFRESH_EXPIRES_IN || '7d' }
-    );
-    const needsOnboarding = !user.isOnboarded;
+  const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+  });
+  const needsOnboarding = !user.isOnboarded;
 
-    const data = {
-      needsOnboarding: needsOnboarding,
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        provider: user.provider
-      }
-    }
+  const data = {
+    needsOnboarding: needsOnboarding,
+    accessToken,
+    refreshToken,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      provider: user.provider,
+    },
+  };
 
-    return data;
+  return data;
+};
 
+export const completeProfileService = async (role, userId) => {
+  if (!["student", "business"].includes(role)) {
+    throw new AppError("Invalid role. Must be student or business", 400);
   }
 
-  export const completeProfileService = async (role,userId)=>{
-    if(!["student","business"].includes(role)){
-      throw new AppError("Invalid role. Must be student or business",400);
-    }
-
-    const user =  await User.findById(userId);
-    if(!user){
-      throw new AppError("User not found",404);
-    }
-    if(user.isOnboarded){
-      throw new AppError("User is already onboarded",400);
-    }
-
-    user.role = role;
-    user.isOnboarded = true;
-    await user.save();
-
-    return user;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError("User not found", 404);
   }
+  if (user.isOnboarded) {
+    throw new AppError("User is already onboarded", 400);
+  }
+
+  user.role = role;
+  user.isOnboarded = true;
+  await user.save();
+
+  return user;
+};
+
+export const getMeService = async (userId) => {
+  const user = await User.findById(userId).select("-password");
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+  const safeUser = {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    provider: user.provider,
+    isOnboarded: user.isOnboarded,
+  };
+  return safeUser;
+};

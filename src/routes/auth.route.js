@@ -1,5 +1,5 @@
 import express from "express";
-import { registerUser, loginUser,refreshToken,googleCallback,completeProfile } from "../controllers/auth.controller.js";
+import { registerUser, loginUser,refreshToken,googleCallback,completeProfile,getMe } from "../controllers/auth.controller.js";
 import { registerSchema, loginSchema } from "../validators/auth.validator.js";
 import { validate } from "../middlewares/validator.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -20,5 +20,6 @@ router.get('/auth/google/callback',
   passport.authenticate('google', { session: false }), googleCallback);
 
 router.patch("/complete-profile",authMiddleware,completeProfile)
+router.get("/me",authMiddleware,getMe)
 
 export default router;

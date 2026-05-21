@@ -1,4 +1,5 @@
-import { createUser, loginUserService,refreshTokenService,googleCallbackService,completeProfileService } from "../services/user.service.js";
+import { success } from "zod";
+import { createUser, loginUserService,refreshTokenService,googleCallbackService,completeProfileService,getMeService } from "../services/user.service.js";
 import { asyncHandler } from "../utils/asyncHandler.util.js";
 
 export const registerUser = asyncHandler(async (req, res) => {
@@ -53,3 +54,11 @@ export const completeProfile = asyncHandler( async(req,res)=>{
     user:user
   });
 })
+
+export const getMe = asyncHandler( async (req,res)=>{
+  const userId = req.user.userId;
+  const user = await getMeService(userId);
+  res.status(200).json({
+    success:true,
+    user:user
+  })})
