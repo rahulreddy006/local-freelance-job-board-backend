@@ -46,12 +46,12 @@ export const completeProfile = asyncHandler( async(req,res)=>{
 
   const userId = req.user.userId;
 
-  const user = await completeProfileService(role,userId);
+  const data = await completeProfileService(role,userId);
 
   res.status(200).json({
     success:true,
     message:"Onboarding complete! welcome aboard",
-    user:user
+    data:data
   });
 })
 

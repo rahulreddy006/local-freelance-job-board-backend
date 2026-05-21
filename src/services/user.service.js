@@ -137,8 +137,21 @@ export const completeProfileService = async (role, userId) => {
   user.role = role;
   user.isOnboarded = true;
   await user.save();
+  
+  const payload = { 
+  userId: user._id, 
+  role: user.role 
+};
 
-  return user;
+const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+  expiresIn: process.env.JWT_EXPIRES_IN || "15m",
+});
+
+const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
+  expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d",
+});
+
+return { user, accessToken, refreshToken };
 };
 
 export const getMeService = async (userId) => {
