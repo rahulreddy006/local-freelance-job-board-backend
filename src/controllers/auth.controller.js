@@ -35,11 +35,9 @@ export const refreshToken = asyncHandler(async (req, res) => {
 export const googleCallback = asyncHandler((req,res)=>{
   const user = req.user;
   const data = googleCallbackService(user);
-  res.status(200).json({
-    success:true,
-    message:"Logged In successfully",
-    data:data
-  });
+  res.status(200).res.redirect(
+ `${process.env.FRONTEND_URL}/oauth-success?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}&needsOnboarding=${data.needsOnboarding}`
+);
 });
 
 export const completeProfile = asyncHandler( async(req,res)=>{
