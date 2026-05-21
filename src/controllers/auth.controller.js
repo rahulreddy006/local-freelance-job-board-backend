@@ -36,7 +36,7 @@ export const refreshToken = asyncHandler(async (req, res) => {
 export const googleCallback = asyncHandler((req,res)=>{
   const user = req.user;
   const data = googleCallbackService(user);
-  res.status(200).res.redirect(
+  res.status(200).redirect(
  `${process.env.FRONTEND_URL}/oauth-success?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}&needsOnboarding=${data.needsOnboarding}`
 );
 });
