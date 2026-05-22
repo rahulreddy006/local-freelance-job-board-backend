@@ -19,6 +19,10 @@ const applicationSchema = new Schema(
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
+    proposal: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,

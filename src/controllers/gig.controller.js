@@ -67,10 +67,12 @@ export const getGigs = asyncHandler(async (req, res) => {
 export const createApplication = asyncHandler(async (req, res) => {
   const gigId = req.params.gigId;
   const appliedBy = req.user.userId;
+  const {proposal} = req.body;
 
   const applicationData = {
     gigId,
     appliedBy,
+    proposal,
   };
 
   const application = await createApplicationService(applicationData);

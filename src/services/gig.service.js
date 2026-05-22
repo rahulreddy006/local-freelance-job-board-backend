@@ -60,7 +60,8 @@ export const createApplicationService = async(data) =>{
 
   const  application  = await Application.create({
     gigId:data.gigId,
-    appliedBy:data.appliedBy
+    appliedBy:data.appliedBy,
+    proposal:data.proposal
   });
 
   return application;
