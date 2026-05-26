@@ -8,23 +8,35 @@
 ![Swagger](https://img.shields.io/badge/API-Swagger-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
-A production-style backend API for a local freelance job marketplace that connects students with local businesses for short-term gigs and freelance opportunities.
+A production-ready backend API for a local freelance job marketplace that connects students with local businesses for short-term gigs and freelance opportunities.
 
-This backend enables businesses to post gigs, students to apply, and businesses to review, accept, or reject applications through a structured workflow. The platform also supports secure JWT authentication, Google OAuth onboarding, refresh token authentication, advanced querying, and role-based authorization.
+The platform enables businesses to post gigs, students to apply, and businesses to review, accept, or reject applications through a structured workflow.
 
-The project is designed using scalable backend engineering principles with modular architecture, service-layer business logic, middleware-driven validation, centralized error handling, production security middleware, and interactive Swagger API documentation.
+This backend follows scalable backend engineering principles using modular architecture, service-layer business logic, centralized error handling, middleware-driven validation, production security practices, and interactive Swagger API documentation.
 
 ---
 
 # Live Deployment
 
-## Live API
+- API Base URL: [Live API](https://local-freelance-backend.onrender.com)
+- Swagger Documentation: [API Docs](https://local-freelance-backend.onrender.com/api-docs)
 
-https://local-freelance-backend.onrender.com
+---
 
-## Swagger Documentation
+# Production Highlights
 
-https://local-freelance-backend.onrender.com/api-docs
+- Layered MVC + Service Architecture
+- JWT Authentication + Refresh Tokens
+- Google OAuth Authentication
+- Role-Based Authorization
+- Swagger/OpenAPI Documentation
+- Zod Request Validation
+- Centralized Error Handling
+- Production Security Middleware
+- Advanced Query Features
+- Modular Scalable Architecture
+- MongoDB Injection Protection
+- Request Rate Limiting
 
 ---
 
@@ -67,7 +79,7 @@ https://local-freelance-backend.onrender.com/api-docs
 | bcryptjs | Password hashing |
 | Zod | Request validation |
 | Morgan | HTTP request logging |
-| Winston | Structured logging |
+| Winston | Structured application logging |
 | express-rate-limit | Rate limiting |
 | Helmet | Security headers |
 | CORS | Cross-origin resource sharing |
@@ -78,13 +90,11 @@ https://local-freelance-backend.onrender.com/api-docs
 | Swagger JSDoc | Swagger/OpenAPI generation |
 | ES Modules | Modern JavaScript module system |
 
-⚠️ Verify exact package versions from `package.json`.
-
 ---
 
-# Architecture Overview
+# System Architecture
 
-The project follows a modular backend architecture with clear separation of concerns.
+The project follows a layered backend architecture with clear separation of concerns between routing, controllers, services, models, middleware, and infrastructure components.
 
 ## Architecture Layers
 
@@ -94,16 +104,21 @@ The project follows a modular backend architecture with clear separation of conc
 - **Models** → MongoDB schemas
 - **Middlewares** → Authentication, authorization, validation, security
 - **Validators** → Zod validation schemas
-- **Config** → Database, logger, Swagger, Passport configuration
+- **Config** → Database, Swagger, Passport, and Logger configuration
 - **Utils** → Reusable helpers and custom error handling
+
+---
+
+## Architecture Diagram
+
+![Architecture Diagram](./docs/architecture-diagram.png)
 
 ---
 
 # Folder Structure
 
 ```bash
-backend/
-│
+.
 ├── src/
 │   ├── config/
 │   │   ├── db.config.js
@@ -133,7 +148,7 @@ backend/
 │   │   └── application.route.js
 │   │
 │   ├── services/
-│   │   ├── auth.service.js
+│   │   ├── user.service.js
 │   │   ├── gig.service.js
 │   │   └── application.service.js
 │   │
@@ -146,12 +161,14 @@ backend/
 │       ├── gig.validator.js
 │       └── application.validator.js
 │
+├── docs/
 ├── logs/
 ├── .env
 ├── .gitignore
 ├── app.js
 ├── server.js
 ├── package.json
+├── LICENSE
 └── README.md
 ```
 
@@ -240,18 +257,28 @@ http://localhost:4000
 
 # Environment Variables
 
-| Variable | Purpose | Example | Required |
-|---|---|---|---|
-| PORT | Application server port | `4000` | Yes |
-| MONGO_URI | MongoDB connection string | `mongodb+srv://...` | Yes |
-| JWT_SECRET | JWT access token secret | `supersecret123` | Yes |
-| JWT_REFRESH_SECRET | JWT refresh token secret | `refreshsecret456` | Yes |
-| JWT_EXPIRES_IN | Access token expiration | `15m` | Yes |
-| JWT_REFRESH_EXPIRES_IN | Refresh token expiration | `7d` | Yes |
-| GOOGLE_CLIENT_ID | Google OAuth client ID | `123456.apps.googleusercontent.com` | Yes |
-| GOOGLE_CLIENT_SECRET | Google OAuth client secret | `GOCSPX-xxxxx` | Yes |
-| GOOGLE_CALLBACK_URL | OAuth callback URL | `http://localhost:4000/api/v1/auth/google/callback` | Yes |
-| API_URL | Base API URL for Swagger | `http://localhost:4000/api/v1` | Yes |
+| Variable | Purpose | Required |
+|---|---|---|
+| PORT | Application server port | Yes |
+| MONGO_URI | MongoDB connection string | Yes |
+| JWT_SECRET | JWT access token secret | Yes |
+| JWT_REFRESH_SECRET | JWT refresh token secret | Yes |
+| JWT_EXPIRES_IN | Access token expiration | Yes |
+| JWT_REFRESH_EXPIRES_IN | Refresh token expiration | Yes |
+| GOOGLE_CLIENT_ID | Google OAuth client ID | Yes |
+| GOOGLE_CLIENT_SECRET | Google OAuth client secret | Yes |
+| GOOGLE_CALLBACK_URL | OAuth callback URL | Yes |
+| API_URL | Base API URL for Swagger | Yes |
+
+---
+
+# API Status
+
+| Service | Status |
+|---|---|
+| Backend API | Online |
+| MongoDB Database | Connected |
+| Swagger Documentation | Available |
 
 ---
 
@@ -261,10 +288,10 @@ http://localhost:4000
 
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
-| POST | `/api/v1/register` | Register a new user | No |
-| POST | `/api/v1/login` | Login user and generate tokens | No |
-| POST | `/api/v1/refresh-token` | Generate new access token | No |
-| PATCH | `/api/v1/complete-profile` | Complete Google OAuth onboarding | Yes |
+| POST | `/api/v1/auth/register` | Register a new user | No |
+| POST | `/api/v1/auth/login` | Login user and generate tokens | No |
+| POST | `/api/v1/auth/refresh-token` | Generate new access token | No |
+| PATCH | `/api/v1/auth/complete-profile` | Complete Google OAuth onboarding | Yes |
 | GET | `/api/v1/auth/google` | Initiate Google OAuth login | No |
 | GET | `/api/v1/auth/google/callback` | Google OAuth callback route | No |
 
@@ -274,10 +301,10 @@ http://localhost:4000
 
 | Method | Endpoint | Description | Auth Required |
 |---|---|---|---|
-| GET | `/api/v1/gigs` | Get all active gigs with filtering/search | No |
+| GET | `/api/v1/gigs` | Get all gigs with filtering/search | No |
 | POST | `/api/v1/gigs` | Create a new gig | Yes (Business) |
 | GET | `/api/v1/gigs/:gigId` | Get gig details by ID | No |
-| GET | `/api/v1/my-gigs` | Get all gigs created by logged-in business | Yes (Business) |
+| GET | `/api/v1/gigs/my-gigs` | Get all gigs created by logged-in business | Yes (Business) |
 
 ---
 
@@ -287,7 +314,7 @@ http://localhost:4000
 |---|---|---|---|
 | POST | `/api/v1/gigs/:gigId/apply` | Apply for a gig | Yes (Student) |
 | PATCH | `/api/v1/applications/:applicationId/status` | Accept/reject application | Yes (Business Owner) |
-| GET | `/api/v1/my-applications` | Get all student applications | Yes (Student) |
+| GET | `/api/v1/applications/my-applications` | Get all student applications | Yes (Student) |
 | GET | `/api/v1/gigs/:gigId/applications` | Get applications for a specific gig | Yes (Business Owner) |
 
 ---
@@ -296,19 +323,17 @@ http://localhost:4000
 
 The project uses JWT-based authentication with refresh token support and Google OAuth onboarding.
 
-## Authentication Flow
+## Local Authentication Flow
 
-### Local Authentication
-
-1. User registers with email and password
+1. User registers using email and password
 2. Password is hashed using bcrypt
 3. User logs in
 4. Access token and refresh token are generated
-5. Client sends access token in Authorization header
+5. Client sends access token using Authorization header
 
 ---
 
-### Google OAuth Flow
+## Google OAuth Flow
 
 1. User clicks "Login with Google"
 2. Backend redirects user to Google OAuth consent screen
@@ -334,9 +359,7 @@ Authorization: Bearer <access_token>
 
 ---
 
-# Database
-
-The project uses MongoDB with Mongoose ODM.
+# Database Models
 
 ## User Model
 
@@ -381,8 +404,6 @@ The application model uses a compound unique index to prevent duplicate applicat
 
 # Query Features
 
-The gigs API supports advanced querying:
-
 ## Pagination
 
 ```bash
@@ -414,6 +435,7 @@ The gigs API supports advanced querying:
 ```
 
 Supported sorting:
+
 - `newest`
 - `oldest`
 - `price_asc`
@@ -444,9 +466,10 @@ The project uses:
 - **Winston** → Structured application logging
 
 Logs are separated for:
-- incoming requests
-- errors
-- production monitoring
+
+- Incoming requests
+- Errors
+- Production monitoring
 
 ---
 
@@ -459,6 +482,7 @@ https://local-freelance-backend.onrender.com/api-docs
 ```
 
 Swagger includes:
+
 - Request bodies
 - Response schemas
 - Authentication testing
@@ -467,13 +491,13 @@ Swagger includes:
 
 ---
 
-# Scripts
+# API Testing
 
-| Script | Description |
-|---|---|
-| `npm run dev` | Start development server using nodemon |
-| `npm start` | Start production server |
-| `npm run server` | ⚠️ Verify this script in package.json |
+## Postman Collection
+
+You can test all API endpoints using the Postman collection below:
+
+[Postman Collection](YOUR_POSTMAN_COLLECTION_LINK)
 
 ---
 
@@ -484,14 +508,102 @@ Business creates gig
         ↓
 Students apply
         ↓
-Business reviews applications
+Businesses review applications
         ↓
 Business accepts one application
         ↓
-Other pending applications auto rejected
+Other pending applications are automatically rejected
         ↓
 Gig status changes to "in-progress"
 ```
+
+---
+
+# Technical Decisions
+
+## Why Express.js?
+
+Express.js provides lightweight and flexible backend architecture while allowing full control over middleware, routing, and request lifecycle management.
+
+It was selected because:
+
+- Lightweight and production-proven
+- Excellent middleware ecosystem
+- Easy integration with MongoDB and Passport.js
+- Suitable for scalable REST API architecture
+
+---
+
+## Why MongoDB + Mongoose?
+
+MongoDB was selected because gig listings and applications are naturally document-oriented and evolve frequently.
+
+Mongoose was used to:
+
+- Enforce schema validation
+- Simplify querying
+- Manage model relationships
+- Support middleware/hooks and indexing
+
+---
+
+## Why Service Layer Architecture?
+
+Business logic was separated into services to avoid fat controllers and improve maintainability.
+
+Benefits include:
+
+- Better separation of concerns
+- Easier testing
+- Cleaner controllers
+- Scalable project structure
+- Easier future migration to microservices
+
+---
+
+## Why JWT + Refresh Tokens?
+
+JWT access tokens provide stateless authentication.
+
+Refresh tokens were added to improve security and user experience by:
+
+- Reducing repeated logins
+- Allowing short-lived access tokens
+- Supporting token rotation strategies in future upgrades
+
+---
+
+## Why Zod Validation?
+
+Zod provides runtime request validation with clean schema definitions and better developer experience compared to manual validation.
+
+It helps ensure:
+
+- Consistent API request validation
+- Cleaner error handling
+- Safer controller logic
+
+---
+
+## Why Swagger Documentation?
+
+Swagger/OpenAPI was integrated to provide interactive API testing and improve developer onboarding.
+
+Benefits include:
+
+- Faster frontend-backend integration
+- Self-documenting APIs
+- Easier debugging and testing
+- Better collaboration
+
+---
+
+# Scripts
+
+| Script | Description |
+|---|---|
+| `npm run dev` | Start development server using nodemon |
+| `npm start` | Start production server |
 
 ---
 
@@ -544,14 +656,4 @@ git push origin feature/your-feature-name
 
 This project is licensed under the MIT License.
 
-```text
-MIT License
-
-Copyright (c) 2026
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files to deal in the Software
-without restriction, including without limitation the rights to use, copy,
-modify, merge, publish, distribute, sublicense, and/or sell copies of the
-Software.
-```
+See the [LICENSE](LICENSE) file for more information.
